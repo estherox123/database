@@ -10,7 +10,7 @@ def search():
     if not query:
         return jsonify({"error": "Missing required parameter: 'query'"}), 400
 
-    base_path = "path/to/local/html/files"
+    base_path = "C:\\Users\PC05\Downloads\database_app\database"
     search_results = []
 
     for root, dirs, files in os.walk(base_path):
@@ -20,12 +20,18 @@ def search():
                 with open(file_path, 'r', encoding='utf-8') as file:
                     soup = BeautifulSoup(file, 'html.parser')
                     page_text = soup.get_text().lower()
+                    # If the query is found in the HTML text, add the text snippet to the results
                     if query in page_text:
-                        page_title = soup.find('h1').get_text()
-                        page_company = soup.find('h3').get_text()
-                        page_date = soup.find('h2').get_text()
-                        snippet = "..." + page_text[page_text.find(query)-50:page_text.find(query)+50] + "..."
-                        search_results.append({"title": f"{page_company} - {page_title}", "date": page_date, "snippet": snippet})
+                        start = page_text.find(query)
+                        sentence_start = page_text.rfind('.', 0, start)
+                        if sentence_start == -1:  # If there's no period, start from the beginning
+                            sentence_start = 0
+                        else:
+                            sentence_start += 2  # Skip past the period and the space after it
+
+                        end = start + 500  # Adjust the range as needed
+                        snippet = page_text[sentence_start:end].replace('\n', ' ').strip()
+                        search_results.append({"title": file_name, "snippet": snippet})
 
     return jsonify(search_results)
 
