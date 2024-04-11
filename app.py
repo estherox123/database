@@ -25,7 +25,7 @@ def search():
         # If the query is found in the HTML text, add the text snippet to the results
         if query.lower() in page_text:
             start = page_text.find(query.lower())
-            end = start + len(query) + 250  # Adjust the range as needed
+            end = start + len(query) + 750  # Adjust the range as needed
             snippet = page_text[start:end].replace('\n', ' ').strip()
             search_results.append({"link": base_url + link, "snippet": snippet})
 
@@ -33,3 +33,7 @@ def search():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+response = requests.get("http://127.0.0.1:5000/search", params={"query": "market trends"})
+print(response.json())
+
