@@ -26,12 +26,19 @@ def search():
         page_company = page_soup.find('h3').get_text()
         page_date = page_soup.find('h2').get_text()
         
-        # If the query is found in the HTML text, add the text snippet to the results
         if query.lower() in page_text:
             start = page_text.find(query.lower())
+            # Find the start of the sentence by looking for the nearest period before the query
+            sentence_start = page_text.rfind('.', 0, start)
+            if sentence_start == -1:  # If there's no period, start from the beginning
+                sentence_start = 0
+            else:
+                sentence_start += 2  # Skip past the period and the space after it
+            
             end = start + len(query) + 750  # Adjust the range as needed
-            snippet = page_text[start:end].replace('\n', ' ').strip()
+            snippet = page_text[sentence_start:end].replace('\n', ' ').strip()
             search_results.append({"title": page_company + " - " + page_title, "date": page_date, "link": base_url + link, "snippet": snippet})
+
 
     return jsonify(search_results)
 
